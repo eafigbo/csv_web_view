@@ -1,0 +1,8 @@
+Jinja2==2.8
+MarkupSafe==0.23
+argparse==1.2.1
+bottle==0.12.9
+mongoengine==0.10.6
+pymongo==3.2.2
+six==1.10.0
+wsgiref==0.1.2
