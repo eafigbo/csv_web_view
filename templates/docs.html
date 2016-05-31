@@ -19,7 +19,38 @@
 {% endmacro %}
 
 
+
+<html>
+
+<head>
+
+<link rel="stylesheet" type="text/css" href="/static/css/main.css">
+<link rel="stylesheet" type="text/css" href="/static/css/normalize.css">
+
+<script type="text/javascript" src="/static/js/vendor/jquery-1.12.0.min.js" ></script>
+<script type="text/javascript" src="/static/js/main.js" ></script>
+<script type="text/javascript" src="/static/js/plugins.js" ></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+</head>
+
+<body>
+
+
+<div id="toplevel">
+
 {{render_pagination(pagination)}}
+
+<p/>
+<div>{{message}}</div>
+
+<div>
+  <h3> Total Count: {{count_all_docs()}}  </h3>
+  <h3> Scored: {{count_all_scored_docs()}} </h3>
+
+</div>
 
 <div><button type="submit" form="form1" value="Submit">Submit</button></div>
 
@@ -28,7 +59,7 @@
 
   {% for doc in docs %}
     <div><H3>Score</H3></div>
-  <div><input type="number" name="score" value="{{doc["score"]}}"></div>
+  <div><input type="number" name="score" value="{{doc["score"]}}" min="0" max="10" id="the_score"></div>
   <input type="hidden" name="_id" value="{{doc["_id"]}}">
       {% for key in sorted(doc.keys()) %}
 
@@ -40,3 +71,10 @@
 <div><button type="submit" form="form1" value="Submit">Submit</button></div>
 
 {{render_pagination(pagination)}}
+
+</div>
+
+</body>
+
+
+<html>
