@@ -18,12 +18,15 @@ args = parser.parse_args()
 
 def csv_to_json(csv_file):
   csv_rows = []
-  with open(csv_file, 'rb') as csv_file:
-    csv_reader = csv.DictReader(csv_file, delimiter = ',' , quotechar = '"')
+  with open(csv_file, 'rU') as csv_file:
+    csv_reader = csv.DictReader(csv_file, delimiter = ',' , quotechar = '"', dialect=csv.excel_tab)
     title = csv_reader.fieldnames
+    count = 0
     for row in csv_reader:
       csv_rows.extend([{title[i]:row[title[i]] for i in range(len(title))}])
-    pp.pprint(csv_rows)
+      count = count + 1
+      print "row"+ `count`
+    #pp.pprint(csv_rows)
 
     save_to_db(csv_rows)
     return csv_rows

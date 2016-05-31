@@ -48,10 +48,9 @@ def show(the_id):
   return dict(doc=doc)
 
 
-@route('/docs/', defaults={'page': 1})
 @route('/docs/list/<page:int>', name="list_page")
 @view('templates/docs.html')
-def show_docs(page):
+def show_docs(page=1):
   count = count_all_docs()
   docs = get_docs_for_page(page, PER_PAGE, count)
   if not docs or page < 1:
@@ -63,6 +62,24 @@ def show_docs(page):
     "url_for_other_page":url_for_other_page,
     "sorted":sorted,
   }
+
+@route('/docs/list/<page:int>', method='POST')
+@view('templates/docs.html')
+def show_docs(page=1):
+  the_id = request.forms.get('_id')
+  the_score = request.forms.get('score')
+  if the_id and the_score and the_score.isdigit() :
+    the_doc = db["documents"].find_one({"_id":ObjectId(the_id)})
+    the_doc["score"] = the_score
+    the_doc = db["documents"].save(the_doc)
+    print "saved!"
+
+  redirect("/docs/list/"+str(page))
+
+
+
+
+
 
 
 

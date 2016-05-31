@@ -19,11 +19,24 @@
 {% endmacro %}
 
 
+{{render_pagination(pagination)}}
+
+<div><button type="submit" form="form1" value="Submit">Submit</button></div>
+
+
+<form action="" method="post" id="form1">
 
   {% for doc in docs %}
+    <div><H3>Score</H3></div>
+  <div><input type="number" name="score" value="{{doc["score"]}}"></div>
+  <input type="hidden" name="_id" value="{{doc["_id"]}}">
       {% for key in sorted(doc.keys()) %}
+
         <div><H3>{{key}}</H3></div>
         <div><i>{{doc[key]|urlize}}</i></div></p>
       {% endfor %}
     {% endfor %}
+</form>
+<div><button type="submit" form="form1" value="Submit">Submit</button></div>
+
 {{render_pagination(pagination)}}
