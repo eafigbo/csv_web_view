@@ -26,7 +26,7 @@ $(document).ready(function(){
         //if(page_number > 1){ no way yet to get max pages in JS, use ajax?
           new_page_number = new Number(page_number) + 1;
         //}
-        new_url = the_url.replace(page_number,'');
+        new_url = the_url.replace('/'+page_number,'/');
         new_url = new_url+new_page_number;
         window.location.href = new_url;
         break;

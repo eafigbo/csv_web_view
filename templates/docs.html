@@ -18,7 +18,15 @@
   </div>
 {% endmacro %}
 
-
+{% macro show_scored(scored_status) %}
+  <div class=pagination>
+    {% if scored_status == "all" %}
+      <a href="/docs/list/unscored/1 ">View Unscored</a>
+    {% else %}
+    <a href="/docs/list/all/1 ">View All</a>
+    {% endif %}
+  </div>
+{% endmacro %}
 
 <html>
 
@@ -42,6 +50,7 @@
 <div id="toplevel">
 
 {{render_pagination(pagination)}}
+{{show_scored(scored_status)}}
 
 <p/>
 <div>{{message}}</div>
@@ -64,7 +73,7 @@
       {% for key in sorted(doc.keys()) %}
 
         <div><H3>{{key}}</H3></div>
-        <div><i>{{doc[key]|urlize}}</i></div></p>
+        <div><i>{{doc[key]|urlize(target='_blank')}}</i></div></p>
       {% endfor %}
     {% endfor %}
 </form>
