@@ -89,20 +89,24 @@ def show_docs(scored_status="all",page=1):
 @route('/docs/list/<scored_status>/<page:int>', method='POST')
 @view('templates/docs.html')
 def show_docs(scored_status="all",page=1):
-  the_id = request.forms.get('_id')
-  the_score = request.forms.get('score')
-  message = ''
-  if the_id and the_score and the_score.isdigit() :
-    the_doc = db[settings.DEFAULT_COLLECTION].find_one({"_id":ObjectId(the_id)})
-    the_doc["score"] = the_score
-    the_doc = db[settings.DEFAULT_COLLECTION].save(the_doc)
-    message = "Score saved!"
-  elif not the_id:
-    message = "Error : id not in request "
-  elif not the_score:
-    message = "Error : Score not in request "
-  elif not the_score.isdigit():
-    message = "Error : Score must be a number between 0 and 10 "
+  the_ids = request.forms.getall('_id')
+  print the_ids
+
+  for the_id in the_ids:
+    the_score = request.forms.get(the_id+'_score')
+    print the_id+'_score'
+    message = ''
+    if the_id and the_score and the_score.isdigit() :
+      the_doc = db[settings.DEFAULT_COLLECTION].find_one({"_id":ObjectId(the_id)})
+      the_doc["score"] = the_score
+      the_doc = db[settings.DEFAULT_COLLECTION].save(the_doc)
+      message = "Score(s) saved!"
+    elif not the_id:
+      message = "Error : id not in request "
+    elif not the_score:
+      message = "Error : Score(s) not in request "
+    elif not the_score.isdigit():
+      message = "Error : Score(s) must be a number between 0 and 10 "
 
   message = urllib.urlencode({"message":message})
 
@@ -129,4 +133,4 @@ def send_html(filename):
 
 
 
-run(host = '0.0.0.0', port = 8080, debug = True)
+run(host = '0.0.0.0', port = settings.DEFAULT_PORT, debug = True)

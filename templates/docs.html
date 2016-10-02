@@ -67,18 +67,21 @@
 <form action="" method="post" id="form1">
 
   {% for doc in docs %}
+  <div id = "sub_page">
     <div><H3>Score</H3></div>
-  <div><input type="number" name="score" value="{{doc["score"]}}" min="0" max="10" id="the_score"></div>
-  <input type="hidden" name="_id" value="{{doc["_id"]}}">
-      {% for key in sorted(doc.keys()) %}
+    <div><input type="number" name="{{doc["_id"]}}_score" value="{{doc["score"]}}" min="0" max="10" id="the_score"></div>
+    <input type="hidden" name="_id" value="{{doc["_id"]}}">
+        {% for key in sorted(doc.keys()) %}
 
-        <div><H3>{{key}}</H3></div>
-        <div><i>{{doc[key]|urlize(target='_blank')}}</i></div></p>
+          <div><H3>{{key}}</H3></div>
+          <div><i>{{doc[key]|urlize(target='_blank')}}</i></div></p>
+        {% endfor %}
+      </div>
+
       {% endfor %}
-    {% endfor %}
-</form>
-<div><button type="submit" form="form1" value="Submit">Submit</button></div>
 
+  </form>
+  <div><button type="submit" form="form1" value="Submit">Submit</button></div>
 {{render_pagination(pagination)}}
 
 </div>
