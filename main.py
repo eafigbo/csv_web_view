@@ -1,4 +1,4 @@
-from bottle import route, run, jinja2_template as template, redirect,abort,jinja2_view as view,url,request,static_file
+from bottle import route, run, jinja2_template as template, redirect,abort,jinja2_view as view,url,request,static_file,response
 import jinja2
 from pymongo import MongoClient
 from bson.objectid import ObjectId
@@ -7,7 +7,11 @@ from math import ceil
 import urllib
 import os
 import project_settings as settings
+import csv_processor
 
+import time
+
+current_milli_time = lambda: int(round(time.time() * 1000))
 
 
 template.defaults = {
@@ -36,6 +40,45 @@ def url_for_other_page(page):
   args = request.url_args.copy()
   args['page'] = page
   return url(request.route.name, **args)
+
+
+@route('/docs/import')
+@view('templates/import.html')
+def import_csv():
+  return {
+          "current_collection": settings.DEFAULT_COLLECTION,
+          "current_database": settings.DEFAULT_DB_NAME
+  }
+
+
+@route('/docs/import', method='POST')
+@view('templates/import_finished.html')
+def do_import_csv():
+  upload = request.files.get('csv_file')
+  if not upload:
+    return {"message":"No File Found!"}
+  file_path = settings.DEFAULT_TEMP_DIR+"/"+ str(current_milli_time)+upload.filename
+  upload.save(file_path)
+  csv_rows = csv_processor.csv_to_json(file_path)
+  return {
+    "message":"Finished with "+str(len(csv_rows))+" rows uploaded",
+    "number_of_rows":len(csv_rows)
+    }
+
+
+@route('/docs/export')
+@view('templates/export.html')
+def export_csv():
+  file_name =  str(current_milli_time())+"_csv_file.csv"
+  csv_processor.write_to_csv(settings.DEFAULT_TEMP_DIR+"/"+file_name)
+  #static_file(file_name,root=settings.DEFAULT_TEMP_DIR,mimetype='text/csv')
+  output = open(settings.DEFAULT_TEMP_DIR+"/"+file_name, 'r')
+  response.headers['Content-Type'] = 'text/csv; charset=UTF-8'
+  response.set_header('Cache-control', 'no-cache, must-revalidate')
+
+  response.headers['Content-Disposition'] = 'attachment; filename='+file_name
+  return output.read()
+
 
 
 @route('/list')
@@ -88,7 +131,7 @@ def show_docs(scored_status="all",page=1):
 
 @route('/docs/list/<scored_status>/<page:int>', method='POST')
 @view('templates/docs.html')
-def show_docs(scored_status="all",page=1):
+def do_show_docs(scored_status="all",page=1):
   the_ids = request.forms.getall('_id')
   print the_ids
 

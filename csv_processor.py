@@ -13,15 +13,8 @@ import project_settings as settings
 client = MongoClient(settings.DEFAULT_DB_HOST, settings.DEFAULT_DB_PORT)
 db = client[settings.DEFAULT_DB_NAME]
 
-pp = pprint.PrettyPrinter(indent = 2)
 
 
-
-parser = argparse.ArgumentParser(description='Module that reads a csv '+\
-'file and pumps it into a MongoDB database')
-parser.add_argument("--mode",  help="read (read from csv file to database) or write (write from database to csv file)")
-parser.add_argument("file_path")
-args = parser.parse_args()
 
 def csv_to_json(csv_file):
   csv_rows = []
@@ -62,17 +55,20 @@ def utf_8_encoder(unicode_csv_data):
     yield line.encode('utf-8')
 
 
+
 def write_to_csv(file_name):
   documents = get_docs()
+  print `documents.count()`
   serialized_documents = json.loads(dumps(documents))
   csv_file = open(file_name,'w')
   csv_writer = UnicodeWriter(csv_file, dialect='excel')
   count = 0
   for doc in serialized_documents:
-    doc.pop('_id',None)
+    print `doc`
+    del(doc['_id'])
     if count == 0:
       header = doc.keys()
-      header.sort()
+      #header.sort()
       csv_writer.writerow(header)
       count = count+1
     csv_writer.writerow(doc.values())
@@ -82,8 +78,18 @@ def write_to_csv(file_name):
 
 
 
-if args.file_path:
-  if args.mode == "r":
-    csv_to_json(args.file_path)
-  elif args.mode == "w":
-    write_to_csv(args.file_path)
+if __name__ == "__main__":
+
+  pp = pprint.PrettyPrinter(indent = 2)
+  parser = argparse.ArgumentParser(description='Module that reads a csv '+\
+  'file and pumps it into a MongoDB database')
+  parser.add_argument("--mode",  help="read (read from csv file to database) or write (write from database to csv file)")
+  parser.add_argument("file_path")
+  args = parser.parse_args()
+
+
+  if args.file_path:
+    if args.mode == "r":
+      csv_to_json(args.file_path)
+    elif args.mode == "w":
+      write_to_csv(args.file_path)

@@ -2,7 +2,7 @@
 DEFAULT_DB_NAME = "test"
 
 # Name of MongoDB collection to be used
-DEFAULT_COLLECTION = "test_docs"
+DEFAULT_COLLECTION = "test_docs1"
 
 # Server where MongoDB database is hosted
 DEFAULT_DB_HOST = "localhost"
@@ -18,3 +18,6 @@ DEFAULT_SITE_NAME = "CSV Display"
 
 # HTTP Port on which you want the web server to run
 DEFAULT_PORT = 8080
+
+# Directory for saving temp files
+DEFAULT_TEMP_DIR = '/tmp'
