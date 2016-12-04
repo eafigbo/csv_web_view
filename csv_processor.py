@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import csv
 import argparse
 import pprint
@@ -82,8 +84,8 @@ if __name__ == "__main__":
 
   pp = pprint.PrettyPrinter(indent = 2)
   parser = argparse.ArgumentParser(description='Module that reads a csv '+\
-  'file and pumps it into a MongoDB database')
-  parser.add_argument("--mode",  help="read (read from csv file to database) or write (write from database to csv file)")
+  'file and pumps it into a MongoDB database. \n Make sure that project_settings.py is properly configured')
+  parser.add_argument("--mode",  help="r (read from csv file to database) or w (write from database to csv file)")
   parser.add_argument("file_path")
   args = parser.parse_args()
 
