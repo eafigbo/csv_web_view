@@ -5,7 +5,7 @@ import argparse
 import pprint
 from pymongo import MongoClient
 import  codecs
-import cStringIO
+#import cStringIO
 from unicode_csv import UnicodeReader,UnicodeWriter,UTF8Recoder
 from bson.json_util import dumps
 import json
@@ -27,7 +27,7 @@ def csv_to_json(csv_file):
     for row in csv_reader:
       csv_rows.extend([{title[i]:row[title[i]] for i in range(len(title))}])
       count = count + 1
-      print "row"+ `count`
+      print("row"+ repr(count))
     #pp.pprint(csv_rows)
 
     save_to_db(csv_rows)
@@ -37,7 +37,7 @@ def csv_to_json(csv_file):
 def save_to_db(json_array):
   for doc in json_array:
     doc_id = db[settings.DEFAULT_COLLECTION].insert_one(doc).inserted_id
-    print doc_id
+    print(doc_id)
 
 def get_docs(query = {}):
   result = db[settings.DEFAULT_COLLECTION].find(query)
@@ -60,13 +60,12 @@ def utf_8_encoder(unicode_csv_data):
 
 def write_to_csv(file_name):
   documents = get_docs()
-  print `documents.count()`
   serialized_documents = json.loads(dumps(documents))
   csv_file = open(file_name,'w')
   csv_writer = UnicodeWriter(csv_file, dialect='excel')
   count = 0
   for doc in serialized_documents:
-    print `doc`
+    print(repr(doc))
     del(doc['_id'])
     if count == 0:
       header = doc.keys()

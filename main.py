@@ -1,5 +1,5 @@
 from bottle import route, run, jinja2_template as template, redirect,abort,jinja2_view as view,url,request,static_file,response
-import jinja2
+#import jinja2
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from pagnation import Pagination
@@ -23,13 +23,13 @@ client = MongoClient(settings.DEFAULT_DB_HOST, settings.DEFAULT_DB_PORT)
 db = client[settings.DEFAULT_DB_NAME]
 
 def count_all_docs(query={}):
-  return db[settings.DEFAULT_COLLECTION].find(query).count()
+  return db[settings.DEFAULT_COLLECTION].count_documents(query)
 
 def count_all_scored_docs():
-  return db[settings.DEFAULT_COLLECTION].find({'score':{ '$exists': True, '$ne':''}}).count()
+  return db[settings.DEFAULT_COLLECTION].count_documents({'score':{ '$exists': True, '$ne':''}})
 
 def get_docs_for_page(page, PER_PAGE, count,query = {}):
-  print "count is "+ str(ceil(count/float(PER_PAGE)))
+  print("count is "+ str(ceil(count/float(PER_PAGE))))
   if (page <1 or page > ceil(count/float(PER_PAGE))):
     return None
   result = db[settings.DEFAULT_COLLECTION].find(query).sort('_id')[((PER_PAGE * page) - PER_PAGE):((PER_PAGE * page))]
@@ -58,7 +58,7 @@ def do_import_csv():
   if not upload:
     return {"message":"No File Found!"}
   file_path = settings.DEFAULT_TEMP_DIR+"/"+ str(current_milli_time)+upload.filename
-  upload.save(file_path)
+  upload.save(file_path,overwrite=True)
   csv_rows = csv_processor.csv_to_json(file_path)
   return {
     "message":"Finished with "+str(len(csv_rows))+" rows uploaded",
@@ -91,7 +91,7 @@ def list():
 @route('/docs/doc/<the_id>')
 @view('templates/show.html')
 def show(the_id):
-  print "id is: " +the_id
+  print("id is: " +the_id)
   doc = db[settings.DEFAULT_COLLECTION].find_one({"_id":ObjectId(the_id)})
 
   return dict(doc=doc)
@@ -101,7 +101,7 @@ def show(the_id):
 @view('templates/docs.html')
 def show_docs(scored_status="all",page=1):
   unscored = request.query.unscored
-  print "scored_status is "+scored_status
+  print("scored_status is "+scored_status)
   query = {}
   if scored_status == "unscored" :
     query = {"score":None}
@@ -133,16 +133,16 @@ def show_docs(scored_status="all",page=1):
 @view('templates/docs.html')
 def do_show_docs(scored_status="all",page=1):
   the_ids = request.forms.getall('_id')
-  print the_ids
+  print(the_ids)
 
   for the_id in the_ids:
     the_score = request.forms.get(the_id+'_score')
-    print the_id+'_score'
+    print(the_id+'_score')
     message = ''
     if the_id and the_score and the_score.isdigit() :
       the_doc = db[settings.DEFAULT_COLLECTION].find_one({"_id":ObjectId(the_id)})
       the_doc["score"] = the_score
-      the_doc = db[settings.DEFAULT_COLLECTION].save(the_doc)
+      the_doc = db[settings.DEFAULT_COLLECTION].replace_one({"_id":ObjectId(the_id)},the_doc)
       message = "Score(s) saved!"
     elif not the_id:
       message = "Error : id not in request "
@@ -151,7 +151,7 @@ def do_show_docs(scored_status="all",page=1):
     elif not the_score.isdigit():
       message = "Error : Score(s) must be a number between 0 and 10 "
 
-  message = urllib.urlencode({"message":message})
+  message = urllib.parse.urlencode({"message":message})
 
   redirect("/docs/list/"+scored_status+"/"+str(page)+"?"+message)
 
@@ -176,4 +176,4 @@ def send_html(filename):
 
 
 
-run(host = '0.0.0.0', port = settings.DEFAULT_PORT, debug = True)
+run(host = '0.0.0.0', port = settings.DEFAULT_PORT, debug = True, reloader = True)

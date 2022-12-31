@@ -1,3 +1,7 @@
+#Random
+csv_web_view_env/
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
