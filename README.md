@@ -16,7 +16,9 @@ Clone this repo and then enter into this directory:
 ```bash
 git clone git@github.com:eafigbo/csv_web_view.git
 cd csv_web_view
+
 ```
+edit project_settings.py to suit your project / platform preferences 
 
 Then install dependencies:
 
@@ -24,8 +26,8 @@ Then install dependencies:
 pip3 install -r requirements.txt
 python3 main.py
 
-point your browser to http://localhost:8080/
 ```
+point your browser to http://localhost:8080/
 
 
 
