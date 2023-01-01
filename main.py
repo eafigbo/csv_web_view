@@ -80,6 +80,19 @@ def export_csv():
   return output.read()
 
 
+@route('/')
+@view('templates/home.html')
+def home():
+  total_count = count_all_docs({})
+  unscored_count = count_all_docs({"score":None})
+  scored_count = count_all_docs({"score":{"$ne":None}})
+
+  return {
+    "total_count":total_count,
+    "unscored_count":unscored_count,
+    "scored_count":scored_count
+  }
+
 
 @route('/list')
 @view('templates/list.html')
@@ -91,7 +104,7 @@ def list():
 @route('/docs/doc/<the_id>')
 @view('templates/show.html')
 def show(the_id):
-  print("id is: " +the_id)
+  #print("id is: " +the_id)
   doc = db[settings.DEFAULT_COLLECTION].find_one({"_id":ObjectId(the_id)})
 
   return dict(doc=doc)
@@ -106,16 +119,19 @@ def show_docs(scored_status="all",page=1):
   if scored_status == "unscored" :
     query = {"score":None}
     count = count_all_docs(query)
+  elif scored_status == "scored":
+    query = {"score":{"$ne":None}}
+    count = count_all_docs(query)
   elif scored_status == "all":
     #query = {"score":"9"}
     query = {}
+    count = count_all_docs(query)
   else:
-    abort(404)
-  count = count_all_docs(query)
+    abort(404,'Unknown Scored Status '+scored_status+' in request parameter.')
 
   docs = get_docs_for_page(page, settings.DEFAULT_RECORDS_PER_PAGE, count,query)
   if not docs or page < 1:
-    abort(404)
+    abort(404, 'No '+scored_status+' records found.')
   pagination = Pagination(page, settings.DEFAULT_RECORDS_PER_PAGE, count)
   message = request.query.message
   return {

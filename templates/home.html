@@ -1,0 +1,24 @@
+<html>
+  <body>
+<div>
+  <b> Welcome to CSV Scoring Tool!</b>
+</div>
+<div>
+  <a href="/list">View all records [{{total_count}}]</a>
+</div>
+<div>
+  {% if unscored_count == 0 %}
+  No Unscored Records 
+  {% else %}
+  <a href="/docs/list/unscored/1">Score the unscored Records [{{unscored_count}}]</a>
+  {% endif %}
+</div>
+<div>
+  {% if scored_count == 0 %}
+  No Scored Records 
+  {% else %}
+  <a href="/docs/list/scored/1">Review Scored Records [{{scored_count}}]</a>
+  {% endif %}
+</div>
+</body>
+</html>

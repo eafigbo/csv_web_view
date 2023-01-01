@@ -19,12 +19,24 @@
 {% endmacro %}
 
 {% macro show_scored(scored_status) %}
-  <div class=pagination>
-    {% if scored_status == "all" %}
-      <a href="/docs/list/unscored/1 ">View Unscored</a>
-    {% else %}
-    <a href="/docs/list/all/1 ">View All</a>
-    {% endif %}
+<div class=pagination>
+  <div>
+  {% if count_all_scored_docs() == 0 %}
+    No Scored Records 
+  {% else %}
+    <a href="/docs/list/scored/1">See Scored Records [{{count_all_scored_docs()}}]</a>
+  {% endif %}
+  </div>
+  <div>
+  {% if count_all_docs() == count_all_scored_docs() %}
+    No Unscored Records 
+  {% else %}
+    <a href="/docs/list/unscored/1">See Unscored Records [{{count_all_docs() - count_all_scored_docs()}}]</a>
+  {% endif %}
+  </div>
+  <div>
+    <a href="/docs/list/all/1">View All</a>
+  </div>
   </div>
 {% endmacro %}
 
