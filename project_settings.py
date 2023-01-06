@@ -2,7 +2,7 @@
 DEFAULT_DB_NAME = "test"
 
 # Name of MongoDB collection to be used
-DEFAULT_COLLECTION = "test_docs1"
+DEFAULT_COLLECTION = "test_docs2"
 
 # Server where MongoDB database is hosted
 DEFAULT_DB_HOST = "localhost"
@@ -21,3 +21,5 @@ DEFAULT_PORT = 8080
 
 # Directory for saving temp files
 DEFAULT_TEMP_DIR = '/tmp'
+
+DB_DRIVER_CLASS = 'db_driver.mongodb_driver.MongoDriver'

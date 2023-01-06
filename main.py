@@ -1,13 +1,12 @@
 from bottle import route, run, jinja2_template as template, redirect,abort,jinja2_view as view,url,request,static_file,response
 #import jinja2
-from pymongo import MongoClient
-from bson.objectid import ObjectId
 from pagnation import Pagination
-from math import ceil
 import urllib
 import os
 import project_settings as settings
 import csv_processor
+import load_class
+
 
 import time
 
@@ -19,21 +18,9 @@ template.defaults = {
     'site_name': settings.DEFAULT_SITE_NAME,
 }
 
-client = MongoClient(settings.DEFAULT_DB_HOST, settings.DEFAULT_DB_PORT)
-db = client[settings.DEFAULT_DB_NAME]
+db_class = load_class.load_class(settings.DB_DRIVER_CLASS)
+db = db_class()
 
-def count_all_docs(query={}):
-  return db[settings.DEFAULT_COLLECTION].count_documents(query)
-
-def count_all_scored_docs():
-  return db[settings.DEFAULT_COLLECTION].count_documents({'score':{ '$exists': True, '$ne':''}})
-
-def get_docs_for_page(page, PER_PAGE, count,query = {}):
-  print("count is "+ str(ceil(count/float(PER_PAGE))))
-  if (page <1 or page > ceil(count/float(PER_PAGE))):
-    return None
-  result = db[settings.DEFAULT_COLLECTION].find(query).sort('_id')[((PER_PAGE * page) - PER_PAGE):((PER_PAGE * page))]
-  return result
 
 
 def url_for_other_page(page):
@@ -83,9 +70,9 @@ def export_csv():
 @route('/')
 @view('templates/home.html')
 def home():
-  total_count = count_all_docs({})
-  unscored_count = count_all_docs({"score":None})
-  scored_count = count_all_docs({"score":{"$ne":None}})
+  total_count = db.count_docs({})
+  unscored_count = db.count_docs({"score":None})
+  scored_count = db.count_docs({"score":{"$ne":None}})
 
   return {
     "total_count":total_count,
@@ -97,7 +84,7 @@ def home():
 @route('/list')
 @view('templates/list.html')
 def list():
-  docs = db[settings.DEFAULT_COLLECTION].find()
+  docs = db.get_docs({})
   return dict(docs=docs)
 
 
@@ -105,7 +92,7 @@ def list():
 @view('templates/show.html')
 def show(the_id):
   #print("id is: " +the_id)
-  doc = db[settings.DEFAULT_COLLECTION].find_one({"_id":ObjectId(the_id)})
+  doc = db.get_document_by_id(the_id)
 
   return dict(doc=doc)
 
@@ -118,18 +105,18 @@ def show_docs(scored_status="all",page=1):
   query = {}
   if scored_status == "unscored" :
     query = {"score":None}
-    count = count_all_docs(query)
+    count = db.count_docs(query)
   elif scored_status == "scored":
     query = {"score":{"$ne":None}}
-    count = count_all_docs(query)
+    count = db.count_docs(query)
   elif scored_status == "all":
     #query = {"score":"9"}
     query = {}
-    count = count_all_docs(query)
+    count = db.count_docs(query)
   else:
     abort(404,'Unknown Scored Status '+scored_status+' in request parameter.')
 
-  docs = get_docs_for_page(page, settings.DEFAULT_RECORDS_PER_PAGE, count,query)
+  docs = db.get_docs_for_page(page, settings.DEFAULT_RECORDS_PER_PAGE, count,query)
   if not docs or page < 1:
     abort(404, 'No '+scored_status+' records found.')
   pagination = Pagination(page, settings.DEFAULT_RECORDS_PER_PAGE, count)
@@ -138,8 +125,8 @@ def show_docs(scored_status="all",page=1):
     "pagination":pagination,
     "docs":docs,
     "url_for_other_page":url_for_other_page,
-    "count_all_scored_docs":count_all_scored_docs,
-    "count_all_docs":count_all_docs,
+    "count_all_scored_docs":db.count_scored_docs,
+    "count_all_docs":db.count_docs,
     "sorted":sorted,
     "message":message,
     "scored_status":scored_status
@@ -156,9 +143,9 @@ def do_show_docs(scored_status="all",page=1):
     print(the_id+'_score')
     message = ''
     if the_id and the_score and the_score.isdigit() :
-      the_doc = db[settings.DEFAULT_COLLECTION].find_one({"_id":ObjectId(the_id)})
+      the_doc = db.get_document_by_id(the_id)
       the_doc["score"] = the_score
-      the_doc = db[settings.DEFAULT_COLLECTION].replace_one({"_id":ObjectId(the_id)},the_doc)
+      the_doc = db.update_document_by_id(the_id,the_doc)
       message = "Score(s) saved!"
     elif not the_id:
       message = "Error : id not in request "

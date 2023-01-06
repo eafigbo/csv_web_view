@@ -3,17 +3,18 @@
 import csv
 import argparse
 import pprint
-from pymongo import MongoClient
 import  codecs
 #import cStringIO
 from unicode_csv import UnicodeReader,UnicodeWriter,UTF8Recoder
 from bson.json_util import dumps
 import json
 import project_settings as settings
+import load_class
 
 
-client = MongoClient(settings.DEFAULT_DB_HOST, settings.DEFAULT_DB_PORT)
-db = client[settings.DEFAULT_DB_NAME]
+
+db_class = load_class.load_class(settings.DB_DRIVER_CLASS)
+db = db_class()
 
 
 
@@ -36,11 +37,11 @@ def csv_to_json(csv_file):
 
 def save_to_db(json_array):
   for doc in json_array:
-    doc_id = db[settings.DEFAULT_COLLECTION].insert_one(doc).inserted_id
+    doc_id = db.create(doc).inserted_id
     print(doc_id)
 
 def get_docs(query = {}):
-  result = db[settings.DEFAULT_COLLECTION].find(query)
+  result = db.get_docs(query)
   return result
 
 
