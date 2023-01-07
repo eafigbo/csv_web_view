@@ -37,8 +37,8 @@ def csv_to_json(csv_file):
 
 def save_to_db(json_array):
   for doc in json_array:
-    doc_id = db.create(doc).inserted_id
-    print(doc_id)
+    doc_id = db.create(doc)
+    print(str(doc_id))
 
 def get_docs(query = {}):
   result = db.get_docs(query)
@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
   pp = pprint.PrettyPrinter(indent = 2)
   parser = argparse.ArgumentParser(description='Module that reads a csv '+\
-  'file and pumps it into a MongoDB database. \n Make sure that project_settings.py is properly configured')
+  'file and pumps it into a database. Supports Sqlite and MongoDB \n Make sure that project_settings.py is properly configured')
   parser.add_argument("--mode",  help="r (read from csv file to database) or w (write from database to csv file)")
   parser.add_argument("file_path")
   args = parser.parse_args()

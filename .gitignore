@@ -1,6 +1,6 @@
 #Random
 csv_web_view_env/
-
+*.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

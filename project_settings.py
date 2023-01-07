@@ -1,5 +1,5 @@
-# Name of MongoDB database to be used
-DEFAULT_DB_NAME = "test"
+# Name of MongoDB database to be used or path to SQLite file
+DEFAULT_DB_NAME = "csv_test.db"
 
 # Name of MongoDB collection to be used
 DEFAULT_COLLECTION = "test_docs2"
@@ -22,4 +22,11 @@ DEFAULT_PORT = 8080
 # Directory for saving temp files
 DEFAULT_TEMP_DIR = '/tmp'
 
-DB_DRIVER_CLASS = 'db_driver.mongodb_driver.MongoDriver'
+DB_DRIVER_CLASS = 'db_driver.sqlite_driver.SQLiteDriver'
+
+#SQL statement to create table in SQLite if it does not already exist
+SQLITE_CREATE_TABLE_STATEMENT = """
+                            CREATE TABLE IF NOT EXISTS "data" (
+                                "json_field"	TEXT
+                            );
+                            """
