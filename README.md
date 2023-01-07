@@ -5,12 +5,12 @@ Comes in handy when you have a a large spreadsheet of records that you want to s
 I built this tool when I had to review a spreadsheet of more than 1000 records and had to create a shortlist of about 100 of them.
 Doing that on a spreadsheet was very painful and so I built this tool to enable me easily page through them, view the records one by one , page through them with my keyboard and assign scores to them.
 
-It is built with Python and MongoDB.
+It is built with Python and support both SQLite and MongoDB.
 
 
 ## Running the tool
 
-To run this tool, you first need to install MongoDB by following the instructions on the [MongoDB website](https://www.mongodb.com/docs/manual/installation/)
+To run this tool on MongoDB, you first need to install MongoDB by following the instructions on the [MongoDB website](https://www.mongodb.com/docs/manual/installation/)
 
 Clone this repo and then enter into this directory:
 ```bash
