@@ -16,6 +16,8 @@
       }}">Next &raquo;</a>
   {% endif %}
   </div>
+  <input id="pagnation_total_count" type="hidden" value="{{pagination.total_count}}" >
+  <div id="pagnation_message"></div>
 {% endmacro %}
 
 {% macro show_scored(scored_status) %}

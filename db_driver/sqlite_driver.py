@@ -33,7 +33,7 @@ class SQLiteDriver():
     elif(query.get("score",None) is None):
         return dict_list(self.cursor.execute('''select json_field from data where json_extract(json_field,'$.score') is NULL''').fetchall())
     else:
-        return dict_list(self.cursor.execute('''select json_field from data where json_extract(json_field,'$.score)' is not NULL''').fetchall())
+        return dict_list(self.cursor.execute('''select json_field from data where json_extract(json_field,'$.score') is not NULL''').fetchall())
 
 
   def count_scored_docs(self):
